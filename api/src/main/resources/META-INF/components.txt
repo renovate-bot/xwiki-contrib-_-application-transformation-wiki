@@ -1,0 +1,3 @@
+org.xwiki.contrib.transformation.wiki.internal.WikiTransformationComponentBuilder
+org.xwiki.contrib.transformation.wiki.internal.WikiTransformationManager
+org.xwiki.contrib.transformation.wiki.internal.WikiTransformationTransformation

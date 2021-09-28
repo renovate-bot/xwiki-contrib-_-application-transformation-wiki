@@ -25,6 +25,7 @@ import java.util.List;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.transformation.Transformation;
 import org.xwiki.rendering.transformation.TransformationContext;
 import org.xwiki.rendering.transformation.TransformationException;
 
@@ -35,13 +36,8 @@ import org.xwiki.rendering.transformation.TransformationException;
  * @since 1.0
  */
 @Role
-public interface WikiTransformation
+public interface WikiTransformation extends Transformation
 {
-    /**
-     * @return the priority of the transformation, the transformation with the lowest priority should be executed first.
-     */
-    int getPriority();
-
     /**
      * @return the list of entities to which the transformation can be applied. If no entity is provided, the
      * transformation can be applied to any entity.

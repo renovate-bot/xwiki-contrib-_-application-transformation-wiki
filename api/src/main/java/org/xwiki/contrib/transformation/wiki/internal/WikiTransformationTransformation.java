@@ -128,7 +128,7 @@ public class WikiTransformationTransformation extends AbstractTransformation
 
                         jobProgressManager.pushLevelProgress(wikiTransformation);
                         jobProgressManager.startStep(transformation,
-                            "wikiTransfromation.progress.applyTransfromation",
+                            "wikiTransformation.progress.applyTransfromation",
                             "Apply transformation [{}]", transformation.getKey());
 
                         // Search for every block that may be concerned by the transformation

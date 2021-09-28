@@ -17,13 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.transformation.wiki.internal;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+package org.xwiki.contrib.transformation.wiki.internal.pattern;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.contrib.transformation.wiki.internal.AbstractWikiComponentWikiTransformation;
+import org.xwiki.contrib.transformation.wiki.internal.pattern.expression.Pattern;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.transformation.TransformationContext;
@@ -34,12 +33,12 @@ import org.xwiki.rendering.transformation.TransformationContext;
  * @version $Id$
  * @since 1.0
  */
-public class PatternWikiComponentWikiTransformation extends AbstractWikiComponentWikiTransformation
+public class PatternWikiTransformation extends AbstractWikiComponentWikiTransformation
 {
     private Pattern pattern;
 
     /**
-     * Create a new {@link PatternWikiComponentWikiTransformation}.
+     * Create a new {@link PatternWikiTransformation}.
      *
      * @param roleHint the role hint
      * @param documentReference the document holding the object
@@ -49,7 +48,7 @@ public class PatternWikiComponentWikiTransformation extends AbstractWikiComponen
      * @param pattern the pattern to match on
      * @throws ComponentLookupException if an error happened
      */
-    public PatternWikiComponentWikiTransformation(String roleHint, DocumentReference documentReference,
+    public PatternWikiTransformation(String roleHint, DocumentReference documentReference,
         DocumentReference authorReference, ComponentManager componentManager, String transformationTemplate,
         Pattern pattern) throws ComponentLookupException
     {
@@ -61,7 +60,6 @@ public class PatternWikiComponentWikiTransformation extends AbstractWikiComponen
     @Override
     protected boolean isApplicableInternal(Block block, TransformationContext context)
     {
-        Matcher matcher = pattern.matcher(block.toString());
-        return matcher.find();
+        return pattern.matches(block);
     }
 }

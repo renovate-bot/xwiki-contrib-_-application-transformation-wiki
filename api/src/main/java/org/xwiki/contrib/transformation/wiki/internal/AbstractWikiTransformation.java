@@ -23,7 +23,11 @@ import javax.inject.Inject;
 
 import org.xwiki.contrib.transformation.wiki.WikiTransformation;
 import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.XDOM;
+import org.xwiki.rendering.syntax.Syntax;
+import org.xwiki.rendering.transformation.Transformation;
 import org.xwiki.rendering.transformation.TransformationContext;
+import org.xwiki.rendering.transformation.TransformationException;
 
 /**
  * Helper for implementing {@link WikiTransformation}.
@@ -38,29 +42,44 @@ public abstract class AbstractWikiTransformation implements WikiTransformation
      */
     public static final int DEFAULT_PRIORITY = 100;
 
+    protected int priority = DEFAULT_PRIORITY;
+
     @Inject
     protected WikiTransformationManager wikiTransformationManager;
 
     @Override
     public int getPriority()
     {
-        return DEFAULT_PRIORITY;
+        return priority;
     }
 
     @Override
     public boolean isApplicable(Block block, TransformationContext context)
     {
-        boolean foundApplicableBlock = false;
-        for (int i = 0; i < getApplicableBlocks().size() && !foundApplicableBlock; i++) {
-            foundApplicableBlock = getApplicableBlocks().get(i).isInstance(block);
+        boolean foundApplicableBlocks = false;
+        for (int i = 0; i < getApplicableBlocks().size() && !foundApplicableBlocks; i++) {
+            foundApplicableBlocks |= getApplicableBlocks().get(i).isInstance(block);
         }
 
-        if (foundApplicableBlock) {
+        if (foundApplicableBlocks) {
             return wikiTransformationManager.appliesToEntity(this, context.getId());
         }
 
         return false;
     }
 
-    protected abstract boolean isApplicableInternal(Block block, TransformationContext context);
+    @Override
+    @Deprecated
+    public void transform(XDOM dom, Syntax syntax) throws TransformationException
+    {
+        transform(dom, new TransformationContext(dom, syntax));
+    }
+
+    @Override
+    public int compareTo(Transformation transformation)
+    {
+        return getPriority() - transformation.getPriority();
+    }
+
+    protected abstract boolean isApplicableInternal(Block block, TransformationContext transformationContext);
 }

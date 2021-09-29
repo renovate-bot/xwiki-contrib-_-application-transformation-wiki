@@ -33,9 +33,9 @@
   <name>Wiki Transformation Application - Parent POM</name>
   <packaging>pom</packaging>
   <scm>
-    <connection>scm:git:git://github.com/xwiki-contrib/application-wiki-transformation.git</connection>
-    <developerConnection>scm:git:git@github.com:xwiki-contrib/application-wiki-transformation.git</developerConnection>
-    <url>https://github.com/xwiki-contrib/application-wiki-transformation/tree/master</url>
+    <connection>scm:git:git://github.com/xwiki-contrib/application-transformation-wiki.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki-contrib/application-transformation-wiki.git</developerConnection>
+    <url>https://github.com/xwiki-contrib/application-transformation-wiki/tree/master</url>
     <tag>HEAD</tag>
   </scm>
   <developers>

@@ -34,39 +34,66 @@ import org.xwiki.rendering.block.SpecialSymbolBlock;
  */
 public class Pattern
 {
-    private List<PatternBlock<? extends Block>> patternBlocks = new ArrayList<>();
+    private List<BlockPattern<? extends Block>> blockPatterns = new ArrayList<>();
 
-    private PatternBlock<? extends Block> primaryPatternBlock;
+    private BlockPattern<? extends Block> primaryBlockPattern;
 
     private int primaryPatternBlockPosition;
 
     /**
-     * Add a new {@link PatternBlock}.
+     * Add a new {@link BlockPattern}.
      *
-     * @param patternBlock the pattern block to add
+     * @param blockPattern the pattern block to add
      */
-    public void addPatternBlock(PatternBlock<? extends Block> patternBlock)
+    public void addPatternBlock(BlockPattern<? extends Block> blockPattern)
     {
-        this.patternBlocks.add(patternBlock);
+        this.blockPatterns.add(blockPattern);
 
         // At each new block, try to update the primary pattern block to a special symbol block
-        // we consider that by default, documents should have less special symbol blocks than word blocks
-        // and as such, matching on the special symbols first should reduce the complexity of the wiki
-        // transformation overall.
-        if (primaryPatternBlock == null
-            || (!primaryPatternBlock.getBlockClass().equals(SpecialSymbolBlock.class)
-                && patternBlock.getBlockClass().equals(SpecialSymbolBlock.class))) {
-            primaryPatternBlock = patternBlock;
-            primaryPatternBlockPosition = patternBlocks.size() - 1;
+        // We try to have a primary block that is as less frequent as possible in documents, in order to start
+        // matching on a few elements.
+        // We take these patterns in increasing order of priority :
+        // * Word patterns
+        // * Symbol patterns
+        // * Symbol patterns that have a specific symbol defined
+        boolean isPrimaryPatternNull = (primaryBlockPattern == null);
+        boolean isPrimaryBlockPatternASymbol =
+            isPrimaryPatternNull || primaryBlockPattern.getBlockClass().equals(SpecialSymbolBlock.class);
+        boolean isBlockPatternASymbol = blockPattern.getBlockClass().equals(SpecialSymbolBlock.class);
+
+        boolean wordToSymbol = (!isPrimaryBlockPatternASymbol && isBlockPatternASymbol);
+        boolean specificSymbol = (isPrimaryBlockPatternASymbol && isBlockPatternASymbol
+            && ((SpecialSymbolBlockPattern) primaryBlockPattern).getSymbol() == '\u0000'
+            && ((SpecialSymbolBlockPattern) blockPattern).getSymbol() != '\u0000');
+
+        if (primaryBlockPattern == null || wordToSymbol || specificSymbol) {
+            primaryBlockPattern = blockPattern;
+            primaryPatternBlockPosition = blockPatterns.size() - 1;
         }
+    }
+
+    /**
+     * @return the list of {@link BlockPattern} that constitute the pattern
+     */
+    public List<BlockPattern<? extends Block>> getBlockPatterns()
+    {
+        return blockPatterns;
     }
 
     /**
      * @return the first pattern block that will be matched in the pattern
      */
-    public PatternBlock<? extends Block> getPrimaryPatternBlock()
+    public BlockPattern<? extends Block> getPrimaryBlockPattern()
     {
-        return primaryPatternBlock;
+        return primaryBlockPattern;
+    }
+
+    /**
+     * @return the position of the first pattern block
+     */
+    public int getPrimaryBlockPatternPosition()
+    {
+        return primaryPatternBlockPosition;
     }
 
     /**
@@ -77,36 +104,30 @@ public class Pattern
      */
     public boolean matches(Block block)
     {
-        // First match against the first matcher block
-        if (checkMatch(block, primaryPatternBlock)) {
-            // Go back to the start of the expression
-            Block currentBlock = block.getPreviousSibling();
-            for (int i = primaryPatternBlockPosition - 1; i >= 0; i--) {
-                if (currentBlock != null && checkMatch(currentBlock, patternBlocks.get(i))) {
-                    currentBlock = currentBlock.getPreviousSibling();
-                } else {
-                    return false;
-                }
-            }
-
-            // Now, go to the end of the expression
-            currentBlock = block.getNextSibling();
-            for (int i = primaryPatternBlockPosition + 1; i < patternBlocks.size(); i++) {
-                if (currentBlock != null && checkMatch(currentBlock, patternBlocks.get(i))) {
-                    currentBlock = currentBlock.getNextSibling();
-                } else {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        return false;
+        return getMatcher(block, true).matches();
     }
 
-    private boolean checkMatch(Block block, PatternBlock patternBlock)
+    /**
+     * Get the {@link Matcher} corresponding to the given block evaluation.
+     *
+     * @param block the block to match
+     * @return the matcher
+     */
+    public Matcher getMatcher(Block block)
     {
-        return patternBlock.getBlockClass().isInstance(block) && patternBlock.matches(block);
+        return getMatcher(block, false);
+    }
+
+    /**
+     * Get the {@link Matcher} corresponding to the given block evaluation.
+     *
+     * @param block the block to match
+     * @param stopOnNoMatch true if the match should stop on first no match, useful to save computing resources
+     * when performing a lot of matches
+     * @return the matcher
+     */
+    public Matcher getMatcher(Block block, boolean stopOnNoMatch)
+    {
+        return new Matcher(this, block, stopOnNoMatch);
     }
 }

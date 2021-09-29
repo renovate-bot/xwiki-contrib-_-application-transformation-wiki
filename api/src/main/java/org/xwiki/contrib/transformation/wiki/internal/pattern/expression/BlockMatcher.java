@@ -19,48 +19,31 @@
  */
 package org.xwiki.contrib.transformation.wiki.internal.pattern.expression;
 
-import org.apache.commons.lang3.StringUtils;
-import org.xwiki.rendering.block.WordBlock;
-
 /**
- * Pattern block for {@link WordBlock}.
+ * A matcher for {@link BlockPattern}.
  *
  * @version $Id$
  * @since 1.0
  */
-public class WordPatternBlock implements PatternBlock<WordBlock>
+public class BlockMatcher
 {
-    private String stringPattern = StringUtils.EMPTY;
-
-    private java.util.regex.Pattern pattern;
+    protected boolean match;
 
     /**
-     * Add a new character to the string pattern.
+     * Build a new {@link BlockMatcher}.
      *
-     * @param c the char to add
+     * @param match true if the block matches.
      */
-    public void addChar(char c)
+    public BlockMatcher(boolean match)
     {
-        stringPattern = stringPattern + c;
-    }
-
-    @Override
-    public Class<WordBlock> getBlockClass()
-    {
-        return WordBlock.class;
-    }
-
-    @Override
-    public boolean matches(WordBlock block)
-    {
-        return pattern.matcher(block.getWord()).find();
+        this.match = match;
     }
 
     /**
-     * Build the pattern based on the string created through the successive calls to {@link #addChar(char)}.
+     * @return true if the block matches.
      */
-    public void buildPattern()
+    public boolean matches()
     {
-        pattern = java.util.regex.Pattern.compile(stringPattern);
+        return match;
     }
 }

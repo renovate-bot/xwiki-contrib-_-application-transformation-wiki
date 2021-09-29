@@ -70,7 +70,7 @@ public class PatternWikiTransformationComponentBuilder
                 baseObject.getDocumentReference(), document.getAuthorReference(),
                 componentManager, transformationTemplate, pattern);
             transformation.setApplicableBlocks(
-                Collections.singletonList(pattern.getPrimaryPatternBlock().getBlockClass()));
+                Collections.singletonList(pattern.getPrimaryBlockPattern().getBlockClass()));
 
             return Collections.singletonList(transformation);
         } catch (ComponentLookupException e) {

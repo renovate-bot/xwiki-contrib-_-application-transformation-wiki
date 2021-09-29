@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Provider;
+import javax.script.ScriptContext;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -40,6 +41,7 @@ import org.xwiki.rendering.syntax.Syntax;
 import org.xwiki.rendering.transformation.TransformationContext;
 import org.xwiki.rendering.transformation.TransformationException;
 import org.xwiki.rendering.transformation.TransformationManager;
+import org.xwiki.script.ScriptContextManager;
 
 import com.xpn.xwiki.XWikiContext;
 
@@ -53,19 +55,9 @@ public abstract class AbstractWikiComponentWikiTransformation extends AbstractWi
     implements WikiComponent
 {
     /**
-     * The context key in which the block being transformed will be provided.
+     * The name of the transformation binding.
      */
-    public static final String CONTEXT_KEY_BLOCK = "transformationBlock";
-
-    /**
-     * The context key in which the transformation context will be provided.
-     */
-    public static final String CONTEXT_KEY_TRANSFORMATION_CONTEXT = "transformationTransformationContext";
-
-    /**
-     * The context key in which the transformation result should be put.
-     */
-    public static final String CONTEXT_KEY_TRANSFORMATION_RESULT = "transformationResult";
+    public static final String BINDING_TRANSFORMATION = "transformation";
 
     protected String roleHint;
 
@@ -85,6 +77,8 @@ public abstract class AbstractWikiComponentWikiTransformation extends AbstractWi
 
     protected Parser parser;
 
+    protected ScriptContextManager scriptContextManager;
+
     protected AbstractWikiComponentWikiTransformation(String roleHint,
         DocumentReference documentReference,
         DocumentReference authorReference,
@@ -103,6 +97,7 @@ public abstract class AbstractWikiComponentWikiTransformation extends AbstractWi
             new DefaultParameterizedType(null, Provider.class, XWikiContext.class));
         this.transformationManager = componentManager.getInstance(TransformationManager.class);
         this.parser = componentManager.getInstance(Parser.class, Syntax.XWIKI_2_1.toIdString());
+        this.scriptContextManager = componentManager.getInstance(ScriptContextManager.class);
     }
 
     @Override
@@ -165,26 +160,30 @@ public abstract class AbstractWikiComponentWikiTransformation extends AbstractWi
         this.applicableBlocks = applicableBlocks;
     }
 
+    /**
+     * Create the script binding that will be available in the template to inject information about the transformation.
+     *
+     * @param block the block being transformed
+     * @param transformationContext the transformation context of the document
+     * @return the binding
+     */
+    protected abstract WikiTransformationBinding getWikiTransformationBinding(Block block,
+        TransformationContext transformationContext);
+
     @Override
     public void transform(Block block, TransformationContext context) throws TransformationException
     {
         try {
-            Block parentBlock = block.getParent();
-
             // Inject information in the context to perform the transformation
-            contextProvider.get().put(CONTEXT_KEY_BLOCK, block);
-            contextProvider.get().put(CONTEXT_KEY_TRANSFORMATION_CONTEXT, context);
+            WikiTransformationBinding transformationBinding = getWikiTransformationBinding(block, context);
+            scriptContextManager.getCurrentScriptContext().setAttribute(
+                BINDING_TRANSFORMATION, transformationBinding, ScriptContext.ENGINE_SCOPE);
 
             Block transformationBlock = parser.parse(new StringReader(transformationTemplate));
             transformationManager.performTransformations(transformationBlock, context);
-            Object result = contextProvider.get().get(CONTEXT_KEY_TRANSFORMATION_RESULT);
 
-            contextProvider.get().remove(CONTEXT_KEY_BLOCK);
-            contextProvider.get().remove(CONTEXT_KEY_TRANSFORMATION_CONTEXT);
-
-            if (result instanceof Block) {
-                parentBlock.replaceChild((Block) result, block);
-            }
+            scriptContextManager.getCurrentScriptContext().removeAttribute(
+                BINDING_TRANSFORMATION, ScriptContext.ENGINE_SCOPE);
         } catch (Exception e) {
             throw new TransformationException(String.format("Failed to run transformation on content with Wiki "
                 + "Transformation [%s]", this.getRoleHint()), e);

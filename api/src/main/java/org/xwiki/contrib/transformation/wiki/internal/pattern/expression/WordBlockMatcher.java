@@ -19,25 +19,33 @@
  */
 package org.xwiki.contrib.transformation.wiki.internal.pattern.expression;
 
-import org.xwiki.rendering.block.SpaceBlock;
-
 /**
- * Pattern block for a {@link SpaceBlock}.
+ * A {@link BlockMatcher} for {@link org.xwiki.rendering.block.WordBlock}.
+ * It wraps a {@link java.util.regex.Matcher} to easily provide regex matching results to transformations.
  *
  * @version $Id$
  * @since 1.0
  */
-public class SpacePatternBlock implements PatternBlock<SpaceBlock>
+public class WordBlockMatcher extends BlockMatcher
 {
-    @Override
-    public Class<SpaceBlock> getBlockClass()
+    private java.util.regex.Matcher matcher;
+
+    /**
+     * Build a new {@link WordBlockMatcher}.
+     *
+     * @param matcher the matcher to use
+     */
+    public WordBlockMatcher(java.util.regex.Matcher matcher)
     {
-        return SpaceBlock.class;
+        super(matcher.matches());
+        this.matcher = matcher;
     }
 
-    @Override
-    public boolean matches(SpaceBlock block)
+    /**
+     * @return the matcher
+     */
+    public java.util.regex.Matcher getMatcher()
     {
-        return true;
+        return matcher;
     }
 }

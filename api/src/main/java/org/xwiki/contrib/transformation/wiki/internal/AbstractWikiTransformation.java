@@ -61,11 +61,11 @@ public abstract class AbstractWikiTransformation implements WikiTransformation
             foundApplicableBlocks |= getApplicableBlocks().get(i).isInstance(block);
         }
 
-        if (foundApplicableBlocks) {
-            return wikiTransformationManager.appliesToEntity(this, context.getId());
-        }
+        foundApplicableBlocks &= wikiTransformationManager.appliesToEntity(this, context.getId());
 
-        return false;
+        foundApplicableBlocks &= isApplicableInternal(block, context);
+
+        return foundApplicableBlocks;
     }
 
     @Override

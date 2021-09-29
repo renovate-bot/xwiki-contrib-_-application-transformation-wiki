@@ -22,6 +22,7 @@ package org.xwiki.contrib.transformation.wiki.internal.pattern;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.contrib.transformation.wiki.internal.AbstractWikiComponentWikiTransformation;
+import org.xwiki.contrib.transformation.wiki.internal.WikiTransformationBinding;
 import org.xwiki.contrib.transformation.wiki.internal.pattern.expression.Pattern;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rendering.block.Block;
@@ -61,5 +62,12 @@ public class PatternWikiTransformation extends AbstractWikiComponentWikiTransfor
     protected boolean isApplicableInternal(Block block, TransformationContext context)
     {
         return pattern.matches(block);
+    }
+
+    @Override
+    protected WikiTransformationBinding getWikiTransformationBinding(Block block,
+        TransformationContext transformationContext)
+    {
+        return new PatternWikiTransformationBinding(block, transformationContext, pattern, pattern.getMatcher(block));
     }
 }

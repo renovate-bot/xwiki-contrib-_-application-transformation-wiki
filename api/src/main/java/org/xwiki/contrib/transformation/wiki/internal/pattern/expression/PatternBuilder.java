@@ -33,7 +33,7 @@ public class PatternBuilder
 
     private boolean willEscape;
 
-    private PatternBlock<?> currentBlock;
+    private BlockPattern<?> currentBlock;
 
     private Pattern expression;
 
@@ -62,7 +62,7 @@ public class PatternBuilder
         char currentChar = pattern.charAt(position);
         if (currentBlock == null) {
             handleNoCurrentBlock(currentChar);
-        } else if (currentBlock instanceof WordPatternBlock) {
+        } else if (currentBlock instanceof WordBlockPattern) {
             handleWordPatternBlock(currentChar);
         }
 
@@ -70,8 +70,8 @@ public class PatternBuilder
 
         if (++position < pattern.length()) {
             buildInternal();
-        } else if (currentBlock instanceof WordPatternBlock) {
-            ((WordPatternBlock) currentBlock).buildPattern();
+        } else if (currentBlock instanceof WordBlockPattern) {
+            ((WordBlockPattern) currentBlock).buildPattern();
         }
     }
 
@@ -79,28 +79,28 @@ public class PatternBuilder
     {
         if (isEscaping) {
             if (currentChar == ' ') {
-                expression.addPatternBlock(new SpacePatternBlock());
+                expression.addPatternBlock(new SpaceBlockPattern());
             } else {
-                expression.addPatternBlock(new SpecialSymbolPatternBlock(currentChar));
+                expression.addPatternBlock(new SpecialSymbolBlockPattern(currentChar));
             }
         } else {
             switch (currentChar) {
                 case '^':
-                    currentBlock = new WordPatternBlock();
-                    ((WordPatternBlock) currentBlock).addChar(currentChar);
+                    currentBlock = new WordBlockPattern();
+                    ((WordBlockPattern) currentBlock).addChar(currentChar);
                     expression.addPatternBlock(currentBlock);
                     break;
                 case '\\':
                     willEscape = true;
                     break;
                 case '?':
-                    expression.addPatternBlock(new SpecialSymbolPatternBlock());
+                    expression.addPatternBlock(new SpecialSymbolBlockPattern());
                     break;
                 case ' ':
-                    expression.addPatternBlock(new SpacePatternBlock());
+                    expression.addPatternBlock(new SpaceBlockPattern());
                     break;
                 default:
-                    expression.addPatternBlock(new SpecialSymbolPatternBlock(currentChar));
+                    expression.addPatternBlock(new SpecialSymbolBlockPattern(currentChar));
                     break;
             }
         }
@@ -108,7 +108,7 @@ public class PatternBuilder
 
     private void handleWordPatternBlock(char currentChar)
     {
-        WordPatternBlock currentWordBlock = (WordPatternBlock) currentBlock;
+        WordBlockPattern currentWordBlock = (WordBlockPattern) currentBlock;
         if (isEscaping) {
             currentWordBlock.addChar(currentChar);
         } else {

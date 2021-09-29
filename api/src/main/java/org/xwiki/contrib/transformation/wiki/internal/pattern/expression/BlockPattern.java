@@ -28,7 +28,7 @@ import org.xwiki.rendering.block.Block;
  * @version $Id$
  * @since 1.0
  */
-public interface PatternBlock<T extends Block>
+public interface BlockPattern<T extends Block>
 {
     /**
      * @return the class of the {@link Block}
@@ -37,7 +37,7 @@ public interface PatternBlock<T extends Block>
 
     /**
      * @param block the block to match
-     * @return true if the given block matches the rules of the pattern
+     * @return the result of the match
      */
-    boolean matches(T block);
+    BlockMatcher matches(Block block);
 }

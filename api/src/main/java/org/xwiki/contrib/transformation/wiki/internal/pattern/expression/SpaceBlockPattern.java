@@ -19,45 +19,26 @@
  */
 package org.xwiki.contrib.transformation.wiki.internal.pattern.expression;
 
-import org.xwiki.rendering.block.SpecialSymbolBlock;
+import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.SpaceBlock;
 
 /**
- * Pattern block for a {@link SpecialSymbolBlock}.
+ * Pattern block for a {@link SpaceBlock}.
  *
  * @version $Id$
  * @since 1.0
  */
-public class SpecialSymbolPatternBlock implements PatternBlock<SpecialSymbolBlock>
+public class SpaceBlockPattern implements BlockPattern<SpaceBlock>
 {
-    private char symbol;
-
-    /**
-     * Create a new {@link SpecialSymbolPatternBlock} bound to no particular symbol.
-     */
-    public SpecialSymbolPatternBlock()
+    @Override
+    public Class<SpaceBlock> getBlockClass()
     {
-
-    }
-
-    /**
-     * Create a new {@link SpecialSymbolPatternBlock}, binding it to a specific symbol.
-     *
-     * @param symbol the symbol to match
-     */
-    public SpecialSymbolPatternBlock(char symbol)
-    {
-        this.symbol = symbol;
+        return SpaceBlock.class;
     }
 
     @Override
-    public Class<SpecialSymbolBlock> getBlockClass()
+    public BlockMatcher matches(Block block)
     {
-        return SpecialSymbolBlock.class;
-    }
-
-    @Override
-    public boolean matches(SpecialSymbolBlock block)
-    {
-        return symbol == '\u0000' || symbol == block.getSymbol();
+        return new BlockMatcher(block instanceof SpaceBlock);
     }
 }

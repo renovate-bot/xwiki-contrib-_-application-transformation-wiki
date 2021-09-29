@@ -57,14 +57,18 @@ public class Pattern
         // * Symbol patterns
         // * Symbol patterns that have a specific symbol defined
         boolean isPrimaryPatternNull = (primaryBlockPattern == null);
-        boolean isPrimaryBlockPatternASymbol =
-            isPrimaryPatternNull || primaryBlockPattern.getBlockClass().equals(SpecialSymbolBlock.class);
         boolean isBlockPatternASymbol = blockPattern.getBlockClass().equals(SpecialSymbolBlock.class);
+        boolean wordToSymbol = false;
+        boolean specificSymbol = false;
 
-        boolean wordToSymbol = (!isPrimaryBlockPatternASymbol && isBlockPatternASymbol);
-        boolean specificSymbol = (isPrimaryBlockPatternASymbol && isBlockPatternASymbol
-            && ((SpecialSymbolBlockPattern) primaryBlockPattern).getSymbol() == '\u0000'
-            && ((SpecialSymbolBlockPattern) blockPattern).getSymbol() != '\u0000');
+        if (!isPrimaryPatternNull) {
+            // Don't compute anything else, as it may throw an NPE if the primary pattern is null
+            boolean isPrimaryBlockPatternASymbol = primaryBlockPattern.getBlockClass().equals(SpecialSymbolBlock.class);
+            wordToSymbol = (!isPrimaryBlockPatternASymbol && isBlockPatternASymbol);
+            specificSymbol = (isPrimaryBlockPatternASymbol && isBlockPatternASymbol
+                && ((SpecialSymbolBlockPattern) primaryBlockPattern).getSymbol() == '\u0000'
+                && ((SpecialSymbolBlockPattern) blockPattern).getSymbol() != '\u0000');
+        }
 
         if (primaryBlockPattern == null || wordToSymbol || specificSymbol) {
             primaryBlockPattern = blockPattern;

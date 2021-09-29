@@ -24,20 +24,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.contrib.transformation.wiki</groupId>
-    <artifactId>application-wiki-transformation</artifactId>
+    <artifactId>application-wiki-transformation-transformation</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>application-wiki-transformation-ui</artifactId>
-  <name>Wiki Transformation Application - UI</name>
-  <properties>
-    <xwiki.extension.name>Wiki Transformation Application</xwiki.extension.name>
-    <xwiki.extension.category>application</xwiki.extension.category>
-  </properties>
-  <packaging>xar</packaging>
+  <artifactId>application-wiki-transformation-transformation-pattern</artifactId>
+  <name>Wiki Transformation Application - Transformation - Pattern</name>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.contrib.transformation.wiki</groupId>
-      <artifactId>application-wiki-transformation-transformation-pattern</artifactId>
+      <artifactId>application-wiki-transformation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

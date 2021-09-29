@@ -60,6 +60,7 @@
   </properties>
   <modules>
     <module>api</module>
+    <module>transformation</module>
     <module>ui</module>
   </modules>
 </project>

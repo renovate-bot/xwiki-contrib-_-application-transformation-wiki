@@ -27,18 +27,10 @@
     <artifactId>application-wiki-transformation</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>application-wiki-transformation-ui</artifactId>
-  <name>Wiki Transformation Application - UI</name>
-  <properties>
-    <xwiki.extension.name>Wiki Transformation Application</xwiki.extension.name>
-    <xwiki.extension.category>application</xwiki.extension.category>
-  </properties>
-  <packaging>xar</packaging>
-  <dependencies>
-    <dependency>
-      <groupId>org.xwiki.contrib.transformation.wiki</groupId>
-      <artifactId>application-wiki-transformation-transformation-pattern</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+  <artifactId>application-wiki-transformation-transformation</artifactId>
+  <name>Wiki Transformation Application - Transformation</name>
+  <packaging>pom</packaging>
+  <modules>
+    <module>pattern</module>
+  </modules>
 </project>

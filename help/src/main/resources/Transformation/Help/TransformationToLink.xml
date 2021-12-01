@@ -1,0 +1,146 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.4" reference="Transformation.Help.TransformationToLink" locale="">
+  <web>Transformation.Help</web>
+  <name>TransformationToLink</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>Transformation.Help.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Wiki transformation to links</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>This page shows an example of a wiki transformation for automatically introducing links when the text ##report #&lt;some report number&gt;## is found.
+
+The link that gets created will point to the page ##Reports.&lt;the report number&gt;.WebHome##.
+
+===Examples===
+|=Source text|=Rendered
+|{{code language="none"}}See the report #1234{{/code}}|See the report #1234
+|{{code language="none"}}As mentionned in report #8524, we need to move forward on this subject{{/code}}|As mentionned in report #8524, we need to move forward on this subject
+
+{{velocity}}
+#set($discard = $doc.use('Transformation.Code.PatternWikiTransformationClass'))
+===Pattern===
+
+{{code language="none"}}$doc.getValue('pattern'){{/code}}
+
+===Template===
+
+{{code language="groovy"}}$doc.getValue('template'){{/code}}
+{{/velocity}}</content>
+  <object>
+    <name>Transformation.Help.TransformationToLink</name>
+    <number>0</number>
+    <className>Transformation.Code.PatternWikiTransformationClass</className>
+    <guid>3bc1c300-4492-4ca6-87ca-e8e6ab5c5c03</guid>
+    <class>
+      <name>Transformation.Code.PatternWikiTransformationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <id>
+        <disabled>0</disabled>
+        <name>id</name>
+        <number>1</number>
+        <prettyName>ID</prettyName>
+        <size>128</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </id>
+      <pattern>
+        <disabled>0</disabled>
+        <name>pattern</name>
+        <number>4</number>
+        <prettyName>Pattern</prettyName>
+        <size>256</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pattern>
+      <priority>
+        <disabled>0</disabled>
+        <name>priority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>Priority</prettyName>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </priority>
+      <template>
+        <disabled>0</disabled>
+        <editor>Text</editor>
+        <name>template</name>
+        <number>3</number>
+        <prettyName>Template</prettyName>
+        <rows>50</rows>
+        <size>100</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </template>
+    </class>
+    <property>
+      <id>reportHelpTransformation</id>
+    </property>
+    <property>
+      <pattern>^report$ #^([0-9]+)$</pattern>
+    </property>
+    <property>
+      <priority>500</priority>
+    </property>
+    <property>
+      <template>{{groovy}}
+import org.xwiki.rendering.block.LinkBlock;
+import org.xwiki.rendering.listener.reference.ResourceReference;
+import org.xwiki.rendering.listener.reference.ResourceType;
+
+logger = services.logging.getLogger('Transformation.Help.TransformationToLink');
+try {
+  // We cannot re-use the matched blocks directly in our transformation results, we need to copy them
+  def childBlocks = transformation.getMatcher().getMatchedBlocks()*.clone();
+
+  // We know from the expression of our pattern matching that the block containing the ID of the report is the 4th one in the match
+  def blockReportId = transformation.getMatcher().getMatchedBlocks().get(3);
+  // Get the result of the regex match for this block (note : we could also have used directly blockReportId.getWord() as the whole word block only consists in the ID of the report we want to fetch
+  def reportId = transformation.getMatcher().getMatchResult(blockReportId).getMatcher().group(0);
+
+  ResourceReference reference = new ResourceReference("Reports.${reportId}.WebHome", ResourceType.DOCUMENT); 
+  LinkBlock result = new LinkBlock(childBlocks, reference, false);
+  transformation.setResult(result);
+} catch (Exception e) {
+  logger.error('Uncaught exception in wiki transformation [reportHelpTransformation]', e);
+}
+{{/groovy}}</template>
+    </property>
+  </object>
+</xwikidoc>

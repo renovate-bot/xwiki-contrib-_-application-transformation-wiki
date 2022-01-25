@@ -30,8 +30,8 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.wiki.WikiComponent;
 import org.xwiki.component.wiki.WikiComponentException;
 import org.xwiki.contrib.transformation.wiki.internal.AbstractWikiTransformationComponentBuilder;
-import org.xwiki.contrib.transformation.wiki.internal.pattern.expression.Pattern;
-import org.xwiki.contrib.transformation.wiki.internal.pattern.expression.PatternBuilder;
+import org.xwiki.contrib.xdom.regex.Pattern;
+import org.xwiki.contrib.xdom.regex.PatternBuilder;
 import org.xwiki.model.reference.EntityReference;
 
 import com.xpn.xwiki.doc.XWikiDocument;

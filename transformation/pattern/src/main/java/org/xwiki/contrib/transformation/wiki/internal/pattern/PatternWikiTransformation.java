@@ -23,7 +23,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.contrib.transformation.wiki.internal.AbstractWikiComponentWikiTransformation;
 import org.xwiki.contrib.transformation.wiki.internal.WikiTransformationBinding;
-import org.xwiki.contrib.transformation.wiki.internal.pattern.expression.Pattern;
+import org.xwiki.contrib.xdom.regex.Pattern;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.transformation.TransformationContext;

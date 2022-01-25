@@ -22,8 +22,8 @@ package org.xwiki.contrib.transformation.wiki.internal.pattern;
 import java.util.List;
 
 import org.xwiki.contrib.transformation.wiki.internal.WikiTransformationBinding;
-import org.xwiki.contrib.transformation.wiki.internal.pattern.expression.Matcher;
-import org.xwiki.contrib.transformation.wiki.internal.pattern.expression.Pattern;
+import org.xwiki.contrib.xdom.regex.Matcher;
+import org.xwiki.contrib.xdom.regex.Pattern;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.transformation.TransformationContext;
 

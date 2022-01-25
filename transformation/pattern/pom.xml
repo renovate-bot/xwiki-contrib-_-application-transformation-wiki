@@ -35,5 +35,10 @@
       <artifactId>application-wiki-transformation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.xdom.regex</groupId>
+      <artifactId>xwiki-xdom-regex-api</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
 </project>
